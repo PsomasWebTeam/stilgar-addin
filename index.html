@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Stilgar by Psomas — Outlook button</title>
+  <link rel="stylesheet" href="taskpane.css">
+  <style> main { max-width: 760px; margin: 0 auto; padding-bottom: 30px; } code { background: #EEF2F4; padding: 1px 5px; border-radius: 4px; } footer { position: static; } </style>
+</head>
+<body>
+  <header class="band"><div class="wordmark">STILGAR <span class="by">by Psomas</span></div></header>
+  <div class="accent"></div>
+  <main>
+    <section class="card">
+      <h2>What this is</h2>
+      <p>The web page behind the <b>Start Legal Hold</b> button in Outlook for the Psomas Legal Department. The button opens a side panel with the same first page as Stilgar's <i>New Legal Hold</i> wizard. Pressing <b>Start Legal Hold</b> sends Terry's billing-list request from Paul Atreides (through the Legal Hold Email Sender flow Stilgar already uses) and hands the request to Stilgar, which files the hold exactly as if it had been started in the app.</p>
+      <p>This site holds no data and no credentials. Everything it does runs through Microsoft 365 under the signed-in user's permissions; the flow's address is carried by the manifest IT deploys (or entered once by the user) and kept in their Outlook settings.</p>
+    </section>
+    <section class="card">
+      <h2>For IT: installing the button</h2>
+      <p>The add-in is installed from the Microsoft 365 admin center, with no hosting, registration or build on your side:</p>
+      <ol>
+        <li>Admin center → <b>Settings → Integrated apps → Upload custom apps</b>.</li>
+        <li>Choose <b>Office Add-in</b>, then <b>Upload manifest file</b> and use the manifest Legal Operations hands you (it carries the flow address), or <b>Provide link to manifest file</b>:<br><code>https://psomaswebteam.github.io/stilgar-addin/manifest.xml</code> (users then paste the address once).</li>
+        <li>Assign it to the Legal Department users named in the request, then <b>Deploy</b>.</li>
+      </ol>
+      <p>Permissions requested: <b>ReadItem</b> only. The panel never reads the selected email; it only needs the signed-in user's name and address. It appears in classic Outlook (on the Home ribbon, usable with no email selected), new Outlook and Outlook on the web (from a selected message's Apps menu) within a few hours of deployment.</p>
+      <p><a class="linkbtn" href="manifest.xml" download>Download the public manifest</a></p>
+    </section>
+    <section class="card">
+      <h2>Files</h2>
+      <ul>
+        <li><code>manifest.xml</code> — the add-in definition Outlook reads</li>
+        <li><code>taskpane.html</code>, <code>taskpane.js</code>, <code>taskpane.css</code> — the side panel</li>
+        <li><code>config.js</code> — the wording of Terry's email, Paul's signature and the project-number rules, generated from the desktop app's source</li>
+      </ul>
+      <p class="muted small">Source: github.com/PsomasWebTeam/stillgar (private). Maintained by Legal Operations.</p>
+    </section>
+  </main>
+  <footer>Psomas — Legal Operations</footer>
+</body>
+</html>

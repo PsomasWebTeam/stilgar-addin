@@ -88,7 +88,7 @@
         </bt:Urls>
         <bt:ShortStrings>
           <bt:String id="Group.Label" DefaultValue="Stilgar"/>
-          <bt:String id="Button.Label" DefaultValue="Start Legal Hold"/>
+          <bt:String id="Button.Label" DefaultValue="Start New legal hold"/>
         </bt:ShortStrings>
         <bt:LongStrings>
           <bt:String id="Button.Tooltip" DefaultValue="Start a new Psomas legal hold: Terry's billing-list request goes out from Paul Atreides and the hold is filed in Stilgar."/>

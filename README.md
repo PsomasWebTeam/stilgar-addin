@@ -6,7 +6,7 @@ private repo) that reproduces the **New Legal Hold** page of Stilgar's wizard in
 Outlook task pane.
 
 - `manifest.xml` — the add-in definition. Mailbox 1.13 + `SupportsNoItemContext`, so in
-  classic Outlook the **Start Legal Hold** button on the Home ribbon works with no email
+  classic Outlook the **Start New legal hold** button on the Home ribbon works with no email
   selected; new Outlook and the web open it from a selected message's **Apps** menu.
 - `taskpane.html` / `taskpane.js` / `taskpane.css` — the pane. Field for field the wizard
   (doc-production toggle, project number/name, the optional Terry recipient, time

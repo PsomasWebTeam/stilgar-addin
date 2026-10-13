@@ -28,7 +28,7 @@
     <Form xsi:type="ItemRead">
       <DesktopSettings>
         <SourceLocation DefaultValue="https://psomaswebteam.github.io/stilgar-addin/taskpane.html"/>
-        <RequestedHeight>520</RequestedHeight>
+        <RequestedHeight>450</RequestedHeight>
       </DesktopSettings>
     </Form>
   </FormSettings>

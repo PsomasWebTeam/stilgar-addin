@@ -323,12 +323,17 @@
   }
 
   // --- 2.25: the stilgar: link that opens (or wakes) Stilgar on this PC (launcher.py)
-  function stilgarLink(requestId) { return D.launch.intakeUrl.replace("{requestId}", encodeURIComponent(requestId)); }
+  function stilgarLink(requestId) {
+    const template = (D.launch && D.launch.intakeUrl) || "stilgar://intake?request={requestId}";   // a stale config.js must never stop a hold
+    return template.replace("{requestId}", encodeURIComponent(requestId));
+  }
   function launchStilgar(requestId) {
-    const url = stilgarLink(requestId);
-    $("res-open").setAttribute("href", url);           // the manual fallback on the result page
-    try { location.assign(url); return true; }         // an external scheme never replaces the pane
-    catch (e) { return false; }
+    try {
+      const url = stilgarLink(requestId);
+      const a = $("res-open"); if (a) a.setAttribute("href", url);   // the manual fallback on the result page
+      location.assign(url);                                           // an external scheme never replaces the pane
+      return true;
+    } catch (e) { return false; }                                     // opening Stilgar is best effort; the flow call is not
   }
 
   // --- Start Legal Hold (one press)

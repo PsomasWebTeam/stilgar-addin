@@ -322,6 +322,15 @@
     });
   }
 
+  // --- 2.25: the stilgar: link that opens (or wakes) Stilgar on this PC (launcher.py)
+  function stilgarLink(requestId) { return D.launch.intakeUrl.replace("{requestId}", encodeURIComponent(requestId)); }
+  function launchStilgar(requestId) {
+    const url = stilgarLink(requestId);
+    $("res-open").setAttribute("href", url);           // the manual fallback on the result page
+    try { location.assign(url); return true; }         // an external scheme never replaces the pane
+    catch (e) { return false; }
+  }
+
   // --- Start Legal Hold (one press)
   async function start() {
     if (state.busy) return;
@@ -373,6 +382,10 @@
       terryExtraTo: v.extra, allowAdditional: state.allowAdditional, testHold: state.testMode,
       expectedSeq: c.seq, expectedIndicator: c.indicator,
     };
+    // 2.25: open (or wake) Stilgar on this PC right now — still inside the click that pressed
+    // Start, which browsers require before they launch a stilgar: link. Stilgar then watches the
+    // shared queue for this very request and opens the hold's tab the moment it is filed.
+    const opened = launchStilgar(requestId);
     setStatus("Sending Terry's request and handing the hold to Stilgar…", "busy");
     let res;
     try { res = await callFlow(Object.assign(basePayload("start-hold", when), { requestId, request, queue: payload })); }
@@ -384,7 +397,8 @@
                         : `✓ Terry's billing-list request is on its way from Paul Atreides — To: ${realTo.split(";").join("; ")}; CC: ${realCc.split(";").join("; ")}.`)
       : "⚠ Terry's request was NOT queued — Stilgar will open the hold on her email preview so it can be sent from there.";
     $("res-filed").textContent = `⏳ Waiting for Stilgar to file the hold "${c.indicator}"…`;
-    $("res-note").textContent = "Any open Stilgar files it within about a minute (yours first). Safe to close this panel — Paul emails you when it's filed.";
+    $("res-note").textContent = (opened ? "Stilgar is opening on this PC to file it (about a minute). " : "")
+      + "If Stilgar did not open, press Open Stilgar. Any other open Stilgar files it after a few minutes. Safe to close this panel.";
     state.pending = { requestId, indicator: c.indicator, started: Date.now() };
     page("result");
     poll();
@@ -410,7 +424,7 @@
     } catch (e) { /* keep polling — a slow flow answer is not an outcome */ }
     if (Date.now() - p.started > 4 * 60 * 1000) {
       $("res-filed").textContent = `⏳ No Stilgar has picked up "${p.indicator}" yet (none open right now?).`;
-      $("res-note").textContent = "Nothing is lost: the next Stilgar to open — or the 11 AM daily check — files it, and Paul emails you when it's done.";
+      $("res-note").textContent = "Nothing is lost: press Open Stilgar, or the next Stilgar to open — or the 11 AM daily check — files it.";
       state.pending = null; return;
     }
     state.pollTimer = setTimeout(poll, 10000);
@@ -419,7 +433,7 @@
   function resetForm() {
     ["f-number", "f-name", "f-extra", "f-daterange", "kw-input"].forEach((id) => { $(id).value = ""; });
     state.keywords = []; renderChips(); state.touched = {}; state.composed = null; state.allowAdditional = false;
-    setDocprod(false); $("looks-right").checked = false; $("form-problem").textContent = "";
+    setDocprod(false); $("looks-right").checked = false; $("form-problem").textContent = ""; $("res-open").setAttribute("href", "#");
   }
 
   // --- settings
@@ -449,6 +463,7 @@
     [["pv-to", "to"], ["pv-cc", "cc"], ["pv-subject", "subject"], ["pv-body", "body"]].forEach(([id, k]) => $(id).addEventListener("input", () => { state.touched[k] = true; }));
     $("pv-reset").addEventListener("click", (e) => { e.preventDefault(); state.touched = {}; recompute("confirm"); });
     $("btn-again").addEventListener("click", async () => { state.pending = null; resetForm(); page("main"); await fetchIndex(); recompute(); });
+    $("res-open").addEventListener("click", (e) => { if (!/^[a-z][a-z0-9+.-]*:/i.test($("res-open").getAttribute("href") || "")) e.preventDefault(); });
     $("setup-save").addEventListener("click", async () => { if (await connect($("setup-url").value, true)) { page("main"); await fetchIndex(); recompute(); } });
     $("set-save").addEventListener("click", async () => { if (await connect($("set-url").value, false)) setStatus("Flow address saved.", "ok"); });
     $("set-test").addEventListener("click", async () => { await connect($("set-url").value || state.flowUrl, false); });
@@ -460,7 +475,7 @@
   // a few pure helpers exposed for checking from a browser console (no data, no secrets)
   window.__sg = { validateProjectNumber, projectIndicator, holdId, sanitizeNumber, nextSeqFrom, activeHolds, parseExtraRecipients,
     terryDeadline, humanDate, isBusinessDay, composeBilling, fillParagraph, toText, rebuild, buildQueuePayload, ccSupervisors, ccOperator,
-    applyTestMode, validatePayload, shortError, splitTerms, version: VERSION };
+    applyTestMode, validatePayload, shortError, splitTerms, stilgarLink, version: VERSION };
 
   async function init() {
     wire();
